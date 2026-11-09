@@ -1,7 +1,10 @@
+
 package br.edu.ifrn.gerenciausuarios.Service;
 
 import br.edu.ifrn.gerenciausuarios.Model.Usuario;
 import br.edu.ifrn.gerenciausuarios.Repository.UsuarioRepository;
+import br.edu.ifrn.gerenciausuarios.messaging.AdmMessageProducer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +17,19 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private AdmMessageProducer admProducer;
+
     public Usuario salvar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+
+        Usuario salvo = usuarioRepository.save(usuario);
+
+        admProducer.notificarAdm(
+                "CADASTRO",
+                "Usuário cadastrado. ID: " + salvo.getId()
+        );
+
+        return salvo;
     }
 
     public List<Usuario> listarTodos() {
@@ -40,7 +54,14 @@ public class UsuarioService {
         u.setNome(usuario.getNome());
         u.setPapel(usuario.getPapel());
 
-        return usuarioRepository.save(u);
+        Usuario atualizado = usuarioRepository.save(u);
+
+        admProducer.notificarAdm(
+                "ATUALIZACAO",
+                "Usuário atualizado. ID: " + atualizado.getId()
+        );
+
+        return atualizado;
     }
 
     public boolean deletar(Long id) {
@@ -50,6 +71,11 @@ public class UsuarioService {
         }
 
         usuarioRepository.deleteById(id);
+
+        admProducer.notificarAdm(
+                "EXCLUSAO",
+                "Usuário excluído. ID: " + id
+        );
 
         return true;
     }

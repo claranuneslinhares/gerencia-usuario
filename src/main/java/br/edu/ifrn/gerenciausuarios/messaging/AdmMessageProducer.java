@@ -1,3 +1,4 @@
+
 package br.edu.ifrn.gerenciausuarios.messaging;
 
 import br.edu.ifrn.gerenciausuarios.config.AdmRabbitConfig;
@@ -15,21 +16,32 @@ public class AdmMessageProducer {
     public AdmMessageProducer(
             RabbitTemplate rabbitTemplate,
             ObjectMapper objectMapper) {
+
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
     }
 
     public void notificarAdm(String tipoEvento, String mensagem) {
+
         try {
             MensagemAdmDTO dto = new MensagemAdmDTO(
-                    "Vendas",
+                    "Usuario",
                     tipoEvento,
-                    mensagem);
+                    mensagem
+            );
 
             String json = objectMapper.writeValueAsString(dto);
-            rabbitTemplate.convertAndSend("", AdmRabbitConfig.FILA_ADM, json);
+
+            rabbitTemplate.convertAndSend(
+                    "",
+                    AdmRabbitConfig.FILA_ADM,
+                    json
+            );
+
         } catch (Exception e) {
-            throw new IllegalStateException("Erro ao enviar mensagem para o ADM.", e);
+            throw new IllegalStateException(
+                    "Erro ao enviar mensagem para o ADM.", e
+            );
         }
     }
 }
