@@ -1,6 +1,12 @@
 package br.edu.ifrn.gerenciausuarios.Model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuario")
@@ -13,6 +19,13 @@ public class Usuario {
     private String nome;
 
     private String papel;
+
+    @Column(length = 254, unique = true)
+    private String email;
+
+    @JsonIgnore
+    @Column(name = "senha_hash", length = 60)
+    private String senhaHash;
 
     public Usuario() {
     }
@@ -44,5 +57,21 @@ public class Usuario {
 
     public void setPapel(String papel) {
         this.papel = papel;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+
+    public void setSenhaHash(String senhaHash) {
+        this.senhaHash = senhaHash;
     }
 }
